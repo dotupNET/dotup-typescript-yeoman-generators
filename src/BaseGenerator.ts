@@ -366,9 +366,11 @@ export abstract class BaseGenerator<TStep extends string> extends generator.defa
 
     const npm = new NpmApi();
     const packegeJson = <NpmVersion>this.fs.readJSON(this.destinationPath('package.json'));
-    await npm.updateDependencies(packegeJson);
 
-    this.fs.writeJSON('package.json', packegeJson);
+    if (packegeJson !== undefined) {
+      await npm.updateDependencies(packegeJson);
+      this.fs.writeJSON('package.json', packegeJson);
+    }
   }
 
   /**

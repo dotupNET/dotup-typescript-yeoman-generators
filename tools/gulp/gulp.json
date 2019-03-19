@@ -3,5 +3,6 @@
   "docs": true,
   "mocha": true,
   "tslint": true,
-  "watch": true
+  "watch": true,
+  "yogen": true
 }
