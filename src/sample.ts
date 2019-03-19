@@ -1,4 +1,3 @@
-import { AwesomeLibrary } from './AwesomeLibrary';
 
 export class Sample {
 

@@ -1,12 +1,33 @@
 {
-  "version": "0.0.0",
+  "version": "0.1.0",
   "name": "dotup-typescript-yeoman-generators",
   "author": {
     "name": "Peter Ullrich",
     "email": "dotup.software@gmail.com"
   },
+  "scripts": {
+    "build": "tsc",
+    "test": "node node_modules/mocha/bin/mocha --require ts-node/register test/*.test.ts --reporter spec",
+    "postpublish": "git tag -a v%npm_package_version% -m \"Release v%npm_package_version%\" && git push origin --tags",
+    "commit-release": "git commit -a -m \"Release v%npm_package_version%\" && git push && git tag -a v%npm_package_version% -m \"Release v%npm_package_version%\" && git push origin --tags",
+    "docs": "typedoc --mode file --out docs src --exclude \"**/*+(index|.spec|.test|.e2e).ts\"",
+    "gh-pages": "rimraf docs && npm run docs && gh-pages -d docs",
+    "npm-publish": "npm publish"
+  },
+  "description": "Helper to write yeoman generators in typescript",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "inquirer": "^6.2.2",
+    "yeoman-generator": "^3.2.0",
+    "npm-registry-api": "^0.0.2",
+    "dotup-ts-types": "^0.0.19",
+    "chalk": "^2.4.2"
+  },
   "devDependencies": {
     "dotup-ts-library-template": "^0.0.31",
+    "@types/yeoman-generator": "2.0.3",
+    "@types/lodash": "^4.14.123",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
     "chai": "^4.2.0",
@@ -27,23 +48,15 @@
     "del": "^4.0.0",
     "merge2": "^1.2.3"
   },
-  "scripts": {
-    "postpublish": "git tag -a v%npm_package_version% -m \"Release v%npm_package_version%\" && git push origin --tags",
-    "commit-release": "git commit -a -m \"Release v%npm_package_version%\" && git push && git tag -a v%npm_package_version% -m \"Release v%npm_package_version%\" && git push origin --tags",
-    "build": "tsc",
-    "docs": "typedoc --mode file --out docs src --exclude \"**/*+(index|.spec|.test|.e2e).ts\"",
-    "gh-pages": "rimraf docs && npm run docs && gh-pages -d docs",
-    "npm-publish": "npm publish"
-  },
-  "description": "TODO",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dotupNET/dotup-typescript-yeoman-generators.git"
   },
   "keywords": [
-    "TODO"
+    "yeoman",
+    "typescript",
+    "generator",
+    "yeoman-generator"
   ],
   "bugs": {
     "url": "https://github.com/dotupNET/dotup-typescript-yeoman-generators/issues"

@@ -11,5 +11,7 @@
   "mocha.requires": [
     "ts-node/register"
   ],
-  "mocha.files.glob": "test/**/*.test.ts"
+  "mocha.files.glob": "test/**/*.test.ts",
+  "dotupGenerateTestFile.testFileLocation": "test directory",
+  "dotupGenerateTestFile.testDirectoryName": "test"
 }
