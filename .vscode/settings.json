@@ -1,0 +1,15 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+  // typescript
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "single",
+  // mocha
+  "mocha.options": {
+    "compilers": "ts-node/register"
+  },
+  "mocha.requires": [
+    "ts-node/register"
+  ],
+  "mocha.files.glob": "test/**/*.test.ts"
+}

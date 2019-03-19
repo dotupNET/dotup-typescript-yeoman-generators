@@ -1,0 +1,7 @@
+{
+  "build": true,
+  "docs": true,
+  "mocha": true,
+  "tslint": true,
+  "watch": true
+}
