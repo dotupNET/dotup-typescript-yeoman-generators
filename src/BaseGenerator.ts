@@ -37,10 +37,13 @@ export abstract class BaseGenerator<TStep extends string> extends generator.defa
   static counter: number = 0;
 
   readonly projectInfo: ProjectInfo;
+
   skipQuestions: boolean = false;
   projectFiles: Project;
 
   conflictedProjectFiles: Project;
+
+  private readonly doNotEjsReplace: string[] = [];
 
   generatorName: string;
 
@@ -64,6 +67,9 @@ export abstract class BaseGenerator<TStep extends string> extends generator.defa
     this.setRootPath();
   }
 
+  addSkipEjsReplacement(targetPath: string): void {
+    this.doNotEjsReplace.push(targetPath);
+  }
   isAnswered(): boolean {
     const required = this.questions.filter(item => item.isRequired === true);
 
@@ -313,7 +319,9 @@ export abstract class BaseGenerator<TStep extends string> extends generator.defa
             const addJsonContent = JSON.parse(fileContent);
             // tslint:disable-next-line: no-unsafe-any
             this.fs.extendJSON(this.destinationPath(file.targetPath), addJsonContent);
-            this.fs.copyTpl(this.destinationPath(file.targetPath), this.destinationPath(file.targetPath), this.answers);
+            if (!this.doNotEjsReplace.includes(file.targetPath)) {
+              this.fs.copyTpl(this.destinationPath(file.targetPath), this.destinationPath(file.targetPath), this.answers);
+            }
             break;
 
           case '.gitignore':
@@ -322,7 +330,9 @@ export abstract class BaseGenerator<TStep extends string> extends generator.defa
             const newFileContent = `${gitContent}\n\n# ${this.generatorName} related:\n${newGitContent}`;
 
             this.fs.write(this.destinationPath(file.targetPath), newFileContent);
-            this.fs.copyTpl(this.destinationPath(file.targetPath), this.destinationPath(file.targetPath), this.answers);
+            if (!this.doNotEjsReplace.includes(file.targetPath)) {
+              this.fs.copyTpl(this.destinationPath(file.targetPath), this.destinationPath(file.targetPath), this.answers);
+            }
             break;
 
           default:
@@ -339,7 +349,11 @@ export abstract class BaseGenerator<TStep extends string> extends generator.defa
           case '.json':
           case '.gitignore':
           case '.npmignore':
-            this.fs.copyTpl(file.filePath, this.destinationPath(file.targetPath), this.answers);
+            if (this.doNotEjsReplace.includes(file.targetPath)) {
+              this.fs.copy(file.filePath, this.destinationPath(file.targetPath));
+            } else {
+              this.fs.copyTpl(file.filePath, this.destinationPath(file.targetPath), this.answers);
+            }
             break;
 
           default:
