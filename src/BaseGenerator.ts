@@ -346,6 +346,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator.defa
         switch (ext) {
 
           case '.js':
+          case '.md':
           case '.json':
           case '.gitignore':
           case '.npmignore':
