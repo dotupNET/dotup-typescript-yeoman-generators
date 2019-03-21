@@ -324,6 +324,9 @@ export abstract class BaseGenerator<TStep extends string> extends generator.defa
             }
             break;
 
+          case '.yml':
+          case '.txt':
+          case '.md':
           case '.gitignore':
             const newGitContent = fs.readFileSync(file.filePath, 'utf-8');
             const gitContent = this.fs.read(this.destinationPath(file.targetPath), 'utf-8');
@@ -345,6 +348,8 @@ export abstract class BaseGenerator<TStep extends string> extends generator.defa
 
         switch (ext) {
 
+          case '.yml':
+          case '.txt':
           case '.js':
           case '.md':
           case '.json':
