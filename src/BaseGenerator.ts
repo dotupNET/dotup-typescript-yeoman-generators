@@ -20,6 +20,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
   readonly projectInfo: ProjectInfo;
 
   skipQuestions: boolean = false;
+  skipGenerator: boolean = false;
   projectFiles: Project;
 
   conflictedProjectFiles: Project;
@@ -204,6 +205,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
    * Where you prompt users for options(where you’d call this.prompt())
    */
   async prompting(): Promise<void> {
+    if (this.skipGenerator) return;
 
     if (this.skipQuestions || this.questions.length < 1) {
       return;
@@ -267,18 +269,23 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
    * Saving configurations and configure the project(creating.editorconfig files and other metadata files)
    */
   async configuring(): Promise<void> {
+    if (this.skipGenerator) return;
     // tslint:disable-next-line: no-backbone-get-set-outside-model
     // this.config.set('answers', this.answers);
     // this.config.save();
   }
 
   loadTemplateFiles(): void {
+    if (this.skipGenerator) return;
+
     this.logBlue(`Analyse template files. (${this.generatorName})`);
     const x = new ProjectPathAnalyser((...args) => this.templatePath(...args));
     this.projectFiles = x.getProjectFiles(this.projectInfo);
   }
 
   async copyTemplateFiles(): Promise<void> {
+    if (this.skipGenerator) return;
+
     this.conflictedProjectFiles = new Project(this.projectInfo);
 
     this.projectFiles.templateFiles.forEach(file => {
@@ -372,10 +379,14 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
   // abstract async writing(): Promise<void>;
   // tslint:disable-next-line: no-reserved-keywords
   async default(): Promise<void> {
+    if (this.skipGenerator) return;
+
     this.loadTemplateFiles();
   }
 
   async writing(): Promise<void> {
+    if (this.skipGenerator) return;
+
     await this.copyTemplateFiles();
   }
 
