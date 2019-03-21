@@ -6,31 +6,12 @@ import { NpmApi, NpmVersion } from 'npm-registry-api';
 import * as path from 'path';
 import generator from 'yeoman-generator';
 // import { Question } from 'yeoman-generator';
-import { IStepQuestion } from './IStepQuestion';
+import { IStepQuestion } from './questions/IStepQuestion';
 import { Project } from './project/Project';
 import { ProjectInfo } from './project/ProjectInfo';
 import { ProjectPathAnalyser } from './project/ProjectPathAnalyser';
-import { Question } from './Question';
-
-interface StringProperty {
-  [key: string]: string;
-}
-
-export type MethodsToRegister<T extends string> = FunctionNamesOnly<Pick<BaseGenerator<T>,
-  'initializing' | 'prompting' | 'configuring' | 'default' | 'writing' |
-  'install' | 'end'
->>;
-
-export enum InquirerQuestionType {
-  input = 'input',
-  number = 'number',
-  confirm = 'confirm',
-  list = 'list',
-  rawlist = 'rawlist',
-  password = 'password'
-}
-
-export type GeneratorOptions<T extends string> = Partial<TypeSaveProperty<Nested<T, string>>>;
+import { Question } from './questions/Question';
+import { StringProperty, GeneratorOptions, MethodsToRegister } from './Types';
 
 export abstract class BaseGenerator<TStep extends string> extends generator {
 

@@ -1,5 +1,7 @@
 // This is the library entry point
 export * from './project/index';
+export * from './questions/index';
 export * from './BaseGenerator';
-export * from './IStepQuestion';
-export * from './Question';
+export * from './questions/IStepQuestion';
+export * from './questions/Question';
+export * from './Types';

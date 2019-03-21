@@ -1,6 +1,5 @@
 // tslint:disable: max-classes-per-file
 import { Answers, ChoiceType } from 'inquirer';
-import { InquirerQuestionType } from './BaseGenerator';
 import { IStepQuestion } from './IStepQuestion';
 
 export class Question<T> implements IStepQuestion<T> {
@@ -48,37 +47,5 @@ export class Question<T> implements IStepQuestion<T> {
         (<any>this)[p] = (<any>props)[p];
       });
 
-  }
-}
-
-export class OptionalQuestion<T> extends Question<T> {
-  constructor(name: string, props: Partial<Question<T>>) {
-    super(name, props);
-    this.isRequired = false;
-  }
-}
-
-export class StoreQuestion<T> extends Question<T> {
-  constructor(name: string, props: Partial<Question<T>>) {
-    super(name, props);
-    this.store = true;
-  }
-}
-
-export class InputQuestion<T> extends Question<T> {
-  constructor(name: string, message: string, store: boolean = true) {
-    super(name, undefined);
-    this.store = store;
-    this.type = InquirerQuestionType.input;
-    this.message = message;
-  }
-}
-
-export class ConfirmQuestion<T> extends Question<T> {
-  constructor(name: string, message: string, store: boolean = true) {
-    super(name, undefined);
-    this.store = store;
-    this.type = InquirerQuestionType.confirm;
-    this.message = message;
   }
 }
