@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as _ from 'lodash';
 import { NpmApi, NpmVersion } from 'npm-registry-api';
 import * as path from 'path';
-import * as generator from 'yeoman-generator';
+import generator from 'yeoman-generator';
 // import { Question } from 'yeoman-generator';
 import { IStepQuestion } from './IStepQuestion';
 import { Project } from './project/Project';
@@ -32,7 +32,7 @@ export enum InquirerQuestionType {
 
 export type GeneratorOptions<T extends string> = Partial<TypeSaveProperty<Nested<T, string>>>;
 
-export abstract class BaseGenerator<TStep extends string> extends generator.default {
+export abstract class BaseGenerator<TStep extends string> extends generator {
 
   static counter: number = 0;
 
