@@ -1,4 +1,5 @@
 test/
+tools/
 coverage/
 secrets/
 src/
@@ -18,3 +19,7 @@ scripts/
 tsconfig.json
 tslint.json
 gruntfile.js
+gulpfile.config.js
+gulpfile.js
+.yo-rc-json
+.eslintrc.json
