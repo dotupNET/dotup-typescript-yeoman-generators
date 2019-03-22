@@ -11,11 +11,13 @@ import { Project } from './project/Project';
 import { ProjectInfo } from './project/ProjectInfo';
 import { ProjectPathAnalyser } from './project/ProjectPathAnalyser';
 import { Question } from './questions/Question';
-import { GeneratorOptions, MethodsToRegister, IProperty } from './Types';
+import { GeneratorOptions, MethodsToRegister, IProperty, ITypedProperty } from './Types';
+import { SharedOptions } from './SharedOptions';
 
 export abstract class BaseGenerator<TStep extends string> extends generator {
 
   static counter: number = 0;
+  static sharedOptions: SharedOptions<string>;
 
   readonly projectInfo: ProjectInfo;
 
@@ -29,22 +31,21 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
 
   generatorName: string;
 
-  answers: TypeSaveProperty<Nested<TStep, string>>;
+  answers: TypeSaveProperty<Nested<TStep, string>> = <TypeSaveProperty<Nested<TStep, string>>>{};
+
 
   // questions: Nested<TStep, IStepQuestion<TStep>>;
-  questions: IStepQuestion<TStep>[];
+  questions: IStepQuestion<TStep>[] = [];
 
   currentStep: TStep;
 
   constructor(args: string | string[], options: GeneratorOptions<TStep>) {
     super(args, options);
     BaseGenerator.counter += 1;
+    this.generatorName = this.constructor.name;
 
     this.projectInfo = new ProjectInfo();
-
-    this.questions = []; // <Nested<TStep, IStepQuestion<TStep>>>{};
-    this.answers = <TypeSaveProperty<Nested<TStep, string>>>{};
-    this.generatorName = this.constructor.name;
+    BaseGenerator.sharedOptions = (<IProperty>options)['sharedOptions'];
 
     this.setRootPath();
   }
@@ -57,6 +58,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
   addSkipEjsReplacement(targetPath: string): void {
     this.doNotEjsReplace.push(targetPath);
   }
+
   isAnswered(): boolean {
     const required = this.questions.filter(item => item.isRequired === true);
 
@@ -245,6 +247,9 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
         if (answer[this.currentStep] !== undefined) {
           hasInput = true;
           this.answers[this.currentStep] = answer[this.currentStep];
+          if (BaseGenerator.sharedOptions) {
+            BaseGenerator.sharedOptions.setAnswer(this.currentStep, answer[this.currentStep]);
+          }
         }
       }
 

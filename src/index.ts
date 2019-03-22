@@ -4,4 +4,6 @@ export * from './questions/index';
 export * from './BaseGenerator';
 export * from './questions/IStepQuestion';
 export * from './questions/Question';
+export * from './SharedOptions';
+export * from './SharedOptionsSubscription';
 export * from './Types';
