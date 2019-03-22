@@ -49,6 +49,11 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
     this.setRootPath();
   }
 
+  compose(generator: string, passThroughAnswers: boolean = true, options?: any): void {
+    const optArgs = passThroughAnswers ? this.answers : options;
+    this.composeWith(require.resolve('generator'), optArgs);
+  }
+
   addSkipEjsReplacement(targetPath: string): void {
     this.doNotEjsReplace.push(targetPath);
   }
