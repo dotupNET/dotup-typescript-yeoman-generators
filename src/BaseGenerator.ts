@@ -23,7 +23,13 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
   static counter: number = 0;
   static sharedOptions: SharedOptions<string>;
 
+  
+  public get sharedOptions(): SharedOptions<TStep> {
+    return BaseGenerator.sharedOptions;
+  }
+  
   readonly projectInfo: ProjectInfo;
+  private readonly doNotEjsReplace: string[] = [];
 
   skipQuestions: boolean = false;
   skipGenerator: boolean = false;
@@ -31,14 +37,10 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
 
   conflictedProjectFiles: Project;
 
-  private readonly doNotEjsReplace: string[] = [];
-
   generatorName: string;
 
   answers: TypeSaveProperty<Nested<TStep, string>> = <TypeSaveProperty<Nested<TStep, string>>>{};
 
-
-  // questions: Nested<TStep, IStepQuestion<TStep>>;
   questions: IStepQuestion<TStep>[] = [];
 
   currentStep: TStep;
