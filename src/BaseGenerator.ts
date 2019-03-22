@@ -51,6 +51,10 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
     BaseGenerator.counter += 1;
     BaseGenerator.sharedOptions = (<IProperty>options)['sharedOptions']; // (<IProperty>options)['sharedOptions'];
 
+    if (this.sharedOptions !== undefined) {
+      _.merge(options, this.sharedOptions.values);
+    }
+    
     this.generatorName = this.constructor.name;
     this.projectInfo = new ProjectInfo();
 
@@ -59,24 +63,24 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
 
   compose(generator: string, passThroughAnswers: boolean = true, options?: any): void {
     const optArgs = options || {};
-    if(passThroughAnswers){
+    if (passThroughAnswers) {
       _.merge(optArgs, this.answers);
     }
     optArgs['sharedOptions'] = this.sharedOptions;
     const filePath = require.resolve(generator,
       {
-        paths:[
+        paths: [
           path.join(this.sourceRoot(), '..')
         ]
       })
     this.composeWith(filePath, optArgs);
   }
 
-  trySubscribeSharedOption(questionName: TStep | string): void {
-    if (this.sharedOptions !== undefined) {
-      this.sharedOptions.subscribe(this, questionName);
-    }
-  }
+  // trySubscribeSharedOption(questionName: TStep | string): void {
+  //   if (this.sharedOptions !== undefined) {
+  //     this.sharedOptions.subscribe(this, questionName);
+  //   }
+  // }
 
   addSkipEjsReplacement(targetPath: string): void {
     this.doNotEjsReplace.push(targetPath);
@@ -91,6 +95,16 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
 
   getQuestion(name: TStep): IStepQuestion<TStep> {
     return this.questions.find(item => item.name === name);
+  }
+
+  tryGetAnswer(questionName: TStep){
+    if(this.answers[questionName] !== undefined){
+      return this.answers[questionName];
+    } else if(this.sharedOptions === undefined){
+      return undefined;
+    } else{
+      return this.sharedOptions.getAnswer(questionName);
+    }
   }
 
   setRootPath(): void {

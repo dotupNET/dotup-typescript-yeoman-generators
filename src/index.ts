@@ -6,5 +6,5 @@ export * from './questions/IStepQuestion';
 export * from './questions/Question';
 export * from './ISharedOptionsSubscriber';
 export * from './SharedOptions';
-export * from './SharedOptionsSubscription';
+// export * from './SharedOptionsSubscription';
 export * from './Types';
