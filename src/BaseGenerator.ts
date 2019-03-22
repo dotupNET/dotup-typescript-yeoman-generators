@@ -45,11 +45,11 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
 
   currentStep: TStep;
 
-  constructor(args: string | string[], options: GeneratorOptions<TStep>, sharedOptions?: SharedOptions<TStep>) {
+  constructor(args: string | string[], options: GeneratorOptions<TStep>) {
     super(args, options);
 
     BaseGenerator.counter += 1;
-    BaseGenerator.sharedOptions = sharedOptions; // (<IProperty>options)['sharedOptions'];
+    BaseGenerator.sharedOptions = (<IProperty>options)['sharedOptions']; // (<IProperty>options)['sharedOptions'];
 
     this.generatorName = this.constructor.name;
     this.projectInfo = new ProjectInfo();
@@ -58,8 +58,12 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
   }
 
   compose(generator: string, passThroughAnswers: boolean = true, options?: any): void {
-    const optArgs = passThroughAnswers ? this.answers : options;
-    this.composeWith(require.resolve('generator'), optArgs);
+    const optArgs = options;
+    if(passThroughAnswers){
+      _.merge(optArgs, this.answers);
+    }
+    optArgs['sharedOptions'] = this.sharedOptions;
+    this.composeWith(require.resolve(generator), optArgs);
   }
 
   trySubscribeSharedOption(questionName: TStep | string): void {
