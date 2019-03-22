@@ -9,7 +9,7 @@ export class SharedOptions<TStep extends string> {
 
   subscriber: SharedOptionsSubscription<TStep>[] = [];
 
-  subscribe<K extends keyof TStep>(subscriber: ISharedOptionsSubscriber, questionName: K | string): void {
+  subscribe(subscriber: ISharedOptionsSubscriber, questionName: TStep | string): void {
     const question = <string>questionName;
     const questionSubscriber = this.subscriber.find(s => s.isSubscriber(subscriber));
 
@@ -22,12 +22,12 @@ export class SharedOptions<TStep extends string> {
 
   }
 
-  getAnswer<K extends keyof TStep>(questionName: K | string): string {
+  getAnswer(questionName: TStep | string): string {
     //    return BaseGenerator.mergedAnswers[<string>questionName];
     return this.values[<string>questionName];
   }
 
-  setAnswer<K extends keyof TStep>(questionName: K | string, value: string): void {
+  setAnswer(questionName: TStep | string, value: string): void {
     //    return BaseGenerator.mergedAnswers[<string>questionName];
     this.values[<string>questionName] = value;
 
