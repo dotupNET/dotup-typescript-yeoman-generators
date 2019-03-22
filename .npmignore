@@ -15,6 +15,7 @@ scripts/
 .travis.yml
 .idea
 .env
+.yo-rc.json
 .nyc_output
 tsconfig.json
 tslint.json
