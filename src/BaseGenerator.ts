@@ -63,7 +63,13 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
       _.merge(optArgs, this.answers);
     }
     optArgs['sharedOptions'] = this.sharedOptions;
-    this.composeWith(require.resolve(generator), optArgs);
+    const filePath = require.resolve(generator,
+      {
+        paths:[
+          path.join(this.sourceRoot(), '..')
+        ]
+      })
+    this.composeWith(filePath, optArgs);
   }
 
   trySubscribeSharedOption(questionName: TStep | string): void {

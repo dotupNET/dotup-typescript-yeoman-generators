@@ -15,6 +15,7 @@ export class SharedOptions<TStep extends string> {
 
     if (questionSubscriber === undefined) {
       const newSubscriber = new SharedOptionsSubscription(subscriber);
+      newSubscriber.addStepSubscription(questionName);
       this.subscriber.push(newSubscriber);
     } else {
       questionSubscriber.addStepSubscription(question);
