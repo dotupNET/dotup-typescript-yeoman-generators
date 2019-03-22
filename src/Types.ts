@@ -1,8 +1,11 @@
 import { FunctionNamesOnly, TypeSaveProperty, Nested } from 'dotup-ts-types';
 import { BaseGenerator } from './BaseGenerator';
 
-export interface StringProperty {
-  [key: string]: string;
+export interface IProperty extends ITypedProperty<any> {
+}
+
+export interface ITypedProperty<T> {
+  [key: string]: T;
 }
 
 

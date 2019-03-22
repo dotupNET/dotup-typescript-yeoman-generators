@@ -11,7 +11,7 @@ import { Project } from './project/Project';
 import { ProjectInfo } from './project/ProjectInfo';
 import { ProjectPathAnalyser } from './project/ProjectPathAnalyser';
 import { Question } from './questions/Question';
-import { StringProperty, GeneratorOptions, MethodsToRegister } from './Types';
+import { GeneratorOptions, MethodsToRegister, IProperty } from './Types';
 
 export abstract class BaseGenerator<TStep extends string> extends generator {
 
@@ -64,7 +64,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
   }
 
   setRootPath(): void {
-    const opt = <StringProperty>this.options;
+    const opt = <IProperty>this.options;
 
     // We're in the wrong folder, try to set root
     if (opt.rootPath && this.destinationPath() !== opt.rootPath) {
@@ -137,7 +137,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
   }
 
   getDefaultProjectName(): string {
-    const opt = <StringProperty>this.options;
+    const opt = <IProperty>this.options;
 
     if (opt.projectName) {
       return _.kebabCase(opt.projectName);
@@ -162,10 +162,10 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
       .keys(propertyDescriptor)
       .map(x => <TStep>x);
 
-    const opt = <StringProperty>this.options;
+    const opt = <IProperty>this.options;
     keys.forEach(key => {
       if (opt[key] !== undefined) {
-        (<StringProperty>this.answers)[key] = opt[key];
+        this.answers[key] = opt[key];
       }
     });
   }

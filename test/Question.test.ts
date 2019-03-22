@@ -3,7 +3,7 @@
  * Date: 2019-03-19 14:20:20
 */
 import { expect } from 'chai';
-import { Question } from '../src/Question';
+import { Question } from '../src/questions/Question';
 
 describe('Test class Question', () => {
 
