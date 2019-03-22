@@ -13,8 +13,12 @@ import { ProjectPathAnalyser } from './project/ProjectPathAnalyser';
 import { Question } from './questions/Question';
 import { GeneratorOptions, MethodsToRegister, IProperty, ITypedProperty } from './Types';
 import { SharedOptions } from './SharedOptions';
+import { ISharedOptionsSubscriber } from "./ISharedOptionsSubscriber";
 
-export abstract class BaseGenerator<TStep extends string> extends generator {
+export abstract class BaseGenerator<TStep extends string> extends generator implements ISharedOptionsSubscriber {
+  onValue(key: string, value: any): void {
+    (<IProperty>this.options)[key] = value;
+  };
 
   static counter: number = 0;
   static sharedOptions: SharedOptions<string>;
@@ -39,13 +43,14 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
 
   currentStep: TStep;
 
-  constructor(args: string | string[], options: GeneratorOptions<TStep>) {
+  constructor(args: string | string[], options: GeneratorOptions<TStep>, sharedOptions?: SharedOptions<TStep>) {
     super(args, options);
-    BaseGenerator.counter += 1;
-    this.generatorName = this.constructor.name;
 
+    BaseGenerator.counter += 1;
+    BaseGenerator.sharedOptions = sharedOptions; // (<IProperty>options)['sharedOptions'];
+
+    this.generatorName = this.constructor.name;
     this.projectInfo = new ProjectInfo();
-    BaseGenerator.sharedOptions = (<IProperty>options)['sharedOptions'];
 
     this.setRootPath();
   }

@@ -1,17 +1,17 @@
-import { ISubscriber } from './SharedOptions';
+import { ISharedOptionsSubscriber } from "./ISharedOptionsSubscriber";
 export class SharedOptionsSubscription<TStep extends string> {
-  private subscriber: ISubscriber;
+  private subscriber: ISharedOptionsSubscriber;
   stepNames: string[] = [];
-  constructor(subscriber: ISubscriber) {
+  constructor(subscriber: ISharedOptionsSubscriber) {
     this.subscriber = subscriber;
   }
-  isSubscriber(subscriber: ISubscriber): boolean {
+  isSubscriber(subscriber: ISharedOptionsSubscriber): boolean {
     return subscriber === this.subscriber;
   }
-  getSubscriber(): ISubscriber {
+  getSubscriber(): ISharedOptionsSubscriber {
     return this.subscriber;
   }
-  getStepSubscriber(stepname: string): ISubscriber {
+  getStepSubscriber(stepname: string): ISharedOptionsSubscriber {
     if (this.hasStepSubscription(stepname)) {
       return undefined;
     }

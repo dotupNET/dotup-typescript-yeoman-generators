@@ -1,10 +1,7 @@
 import { IProperty, ITypedProperty } from './Types';
 import { BaseGenerator } from './BaseGenerator';
 import { SharedOptionsSubscription } from './SharedOptionsSubscription';
-
-export interface ISubscriber {
-  onValue: (value: string) => void;
-}
+import { ISharedOptionsSubscriber } from './ISharedOptionsSubscriber';
 
 export class SharedOptions<TStep extends string> {
 
@@ -12,7 +9,7 @@ export class SharedOptions<TStep extends string> {
 
   subscriber: SharedOptionsSubscription<TStep>[] = [];
 
-  subscribe<K extends keyof TStep>(subscriber: ISubscriber, questionName: K | string): void {
+  subscribe<K extends keyof TStep>(subscriber: ISharedOptionsSubscriber, questionName: K | string): void {
     const question = <string>questionName;
     const questionSubscriber = this.subscriber.find(s => s.isSubscriber(subscriber));
 
@@ -37,7 +34,7 @@ export class SharedOptions<TStep extends string> {
     const subs = this.subscriber
       .filter(s => s.hasStepSubscription(<string>questionName))
       .map(x => x.getSubscriber());
-    subs.forEach(x => x.onValue(value));
+    subs.forEach(x => x.onValue(<string>questionName, value));
   }
 
 }
