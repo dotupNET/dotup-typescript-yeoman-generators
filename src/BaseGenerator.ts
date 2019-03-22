@@ -62,8 +62,10 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
     this.composeWith(require.resolve('generator'), optArgs);
   }
 
-  subscribeSharedOption(questionName: TStep | string): void {
-    this.sharedOptions.subscribe(this, questionName);
+  trySubscribeSharedOption(questionName: TStep | string): void {
+    if (this.sharedOptions !== undefined) {
+      this.sharedOptions.subscribe(this, questionName);
+    }
   }
 
   addSkipEjsReplacement(targetPath: string): void {
