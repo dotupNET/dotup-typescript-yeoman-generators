@@ -23,11 +23,11 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
   static counter: number = 0;
   static sharedOptions: SharedOptions<string>;
 
-  
+
   public get sharedOptions(): SharedOptions<TStep> {
     return BaseGenerator.sharedOptions;
   }
-  
+
   readonly projectInfo: ProjectInfo;
   private readonly doNotEjsReplace: string[] = [];
 
@@ -60,6 +60,10 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
   compose(generator: string, passThroughAnswers: boolean = true, options?: any): void {
     const optArgs = passThroughAnswers ? this.answers : options;
     this.composeWith(require.resolve('generator'), optArgs);
+  }
+
+  subscribeSharedOption(questionName: TStep | string): void {
+    this.sharedOptions.subscribe(this, questionName);
   }
 
   addSkipEjsReplacement(targetPath: string): void {
