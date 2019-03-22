@@ -1,8 +1,10 @@
 {
   "build": true,
-  "docs": true,
-  "mocha": true,
+  "docs": false,
+  "mocha": false,
   "tslint": true,
-  "watch": true,
-  "yogen": true
+  "watch": false,
+  "yogen": false,
+  "npm": true,
+  "statics": true
 }

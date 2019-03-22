@@ -9,12 +9,12 @@ const
 const config = new Config();
 const tsProject = tsc.createProject('tsconfig.json');
 
-const keys = Object.freeze({ 
+const keys = {
   build: 'build',
   clean: 'build-clean',
-  compile: 'build-compile',
+  // compile: 'build-compile',
   watch: 'build-watch'
-});
+};
 module.exports.keys = keys;
 
 /**
@@ -29,26 +29,26 @@ gulp.task(keys.clean, clean);
 /**
  * Compile TypeScript
  */
-function compile() {
+function build() {
 
   var tsResult = tsProject.src()
     .pipe(sourcemaps.init())
-    .pipe(tsProject());
+   .pipe(tsProject());
 
   tsResult.dts.pipe(gulp.dest(config.targetPath));
 
   return tsResult.js
-    .pipe(sourcemaps.write('.'))
+    .pipe(sourcemaps.write('.', { sourceRoot: './', includeContent: false }))
     .pipe(gulp.dest(config.targetPath))
     ;
 }
-module.exports.compile = compile;
-gulp.task(keys.compile, compile);
+module.exports.build = build;
+gulp.task(keys.build, build);
 
 /**
  * Watch for changed TypeScript files
  */
-function watch(){
+function watch() {
   return gulp.watch([config.tsSourceFiles], gulp.series(keys.compile));
 }
 module.exports.watch = watch;
@@ -57,9 +57,11 @@ gulp.task(keys.watch, watch);
 /**
  * Build series
  */
-gulp.task(keys.build,
-  gulp.series(
-    keys.clean,
-    keys.compile
-  )
-);
+// const cleanAndBuild = [
+//   clean,
+//   compile
+// ];
+// module.exports.cleanAndBuild = cleanAndBuild;
+// gulp.task(keys.build,
+//   gulp.series(build)
+// );
