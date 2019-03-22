@@ -58,7 +58,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
   }
 
   compose(generator: string, passThroughAnswers: boolean = true, options?: any): void {
-    const optArgs = options;
+    const optArgs = options || {};
     if(passThroughAnswers){
       _.merge(optArgs, this.answers);
     }
