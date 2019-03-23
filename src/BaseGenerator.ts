@@ -1,28 +1,23 @@
 import chalk from 'chalk';
-import { FunctionNamesOnly, Nested, TypeSaveProperty } from 'dotup-ts-types';
+import { Nested, TypeSaveProperty } from 'dotup-ts-types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import { NpmApi, NpmVersion } from 'npm-registry-api';
 import * as path from 'path';
 import generator from 'yeoman-generator';
-// import { Question } from 'yeoman-generator';
-import { IStepQuestion } from './questions/IStepQuestion';
 import { Project } from './project/Project';
 import { ProjectInfo } from './project/ProjectInfo';
 import { ProjectPathAnalyser } from './project/ProjectPathAnalyser';
+// import { Question } from 'yeoman-generator';
+import { IStepQuestion } from './questions/IStepQuestion';
 import { Question } from './questions/Question';
-import { GeneratorOptions, MethodsToRegister, IProperty, ITypedProperty } from './Types';
 import { SharedOptions } from './SharedOptions';
-import { ISharedOptionsSubscriber } from "./ISharedOptionsSubscriber";
+import { GeneratorOptions, IProperty, MethodsToRegister } from './Types';
 
-export abstract class BaseGenerator<TStep extends string> extends generator implements ISharedOptionsSubscriber {
-  onValue(key: string, value: any): void {
-    (<IProperty>this.options)[key] = value;
-  };
+export abstract class BaseGenerator<TStep extends string> extends generator {
 
   static counter: number = 0;
   static sharedOptions: SharedOptions<string>;
-
 
   public get sharedOptions(): SharedOptions<TStep> {
     return BaseGenerator.sharedOptions;
@@ -30,14 +25,13 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
 
   readonly projectInfo: ProjectInfo;
   private readonly doNotEjsReplace: string[] = [];
+  private readonly generatorName: string;
 
   skipQuestions: boolean = false;
   skipGenerator: boolean = false;
   projectFiles: Project;
 
   conflictedProjectFiles: Project;
-
-  generatorName: string;
 
   answers: TypeSaveProperty<Nested<TStep, string>> = <TypeSaveProperty<Nested<TStep, string>>>{};
 
@@ -54,7 +48,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
     if (this.sharedOptions !== undefined) {
       _.merge(options, this.sharedOptions.values);
     }
-    
+
     this.generatorName = this.constructor.name;
     this.projectInfo = new ProjectInfo();
 
@@ -97,26 +91,29 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
     return this.questions.find(item => item.name === name);
   }
 
-  tryGetAnswer(questionName: TStep){
-    if(this.answers[questionName] !== undefined){
+  tryGetAnswer(questionName: TStep) {
+    if (this.answers[questionName] !== undefined) {
       return this.answers[questionName];
-    } else if(this.sharedOptions === undefined){
+    } else if (this.sharedOptions === undefined) {
       return undefined;
-    } else{
+    } else {
       return this.sharedOptions.getAnswer(questionName);
     }
   }
 
-  setRootPath(): void {
-    const opt = <IProperty>this.options;
+  setRootPath(rootPath?: string): void {
+
+    if (this.sharedOptions === undefined || this.sharedOptions.rootPath === undefined) {
+      return;
+    }
 
     // We're in the wrong folder, try to set root
-    if (opt.rootPath && this.destinationPath() !== opt.rootPath) {
-      this.sourceRoot(opt.rootPath);
+    if (this.destinationPath() !== this.sharedOptions.rootPath) {
+      this.sourceRoot(this.sharedOptions.rootPath);
     }
 
     // If the destination path still points to another directory, a yo file is in parent folder.
-    if (opt.rootPath && this.destinationPath() !== opt.rootPath) {
+    if (this.destinationPath() !== this.sharedOptions.rootPath) {
       this.logRed(`${this.generatorName}: Project target path is ${this.destinationPath()}`);
       this.logRed(`You've to delete the yo file to continue: ${this.destinationPath('.yo-rc.json')}`);
       throw new Error(`You've to delete the yo file to continue: ${this.destinationPath('.yo-rc.json')}`);
@@ -224,6 +221,14 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
     }
   }
 
+  loadTemplateFiles(): void {
+    if (this.skipGenerator) return;
+
+    this.logBlue(`Analyse template files. (${this.generatorName})`);
+    const x = new ProjectPathAnalyser((...args) => this.templatePath(...args));
+    this.projectFiles = x.getProjectFiles(this.projectInfo);
+  }
+
   logGreen(message: string): void {
     this.log(chalk.green(message));
   }
@@ -241,9 +246,36 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
   }
 
   /**
+   * 
+   * OVERRIDES
+   * 
+   */
+  destinationRoot(rootPath?: string): string {
+    if (this.sharedOptions !== undefined) {
+      this.sharedOptions.setRootPath(rootPath);
+    }
+
+    return super.destinationRoot(rootPath);
+  }
+
+  composeWith(namespace: any, options: { [name: string]: any }, settings?: { local: string, link: 'weak' | 'strong' }): this {
+    const optArgs = options || {};
+    _.merge(optArgs, this.answers);
+    optArgs['sharedOptions'] = this.sharedOptions;
+
+    return super.composeWith(namespace, options, settings);
+  }
+
+  /**
+   * 
+   * RUN LOOP
+   * 
+   */
+
+  /**
    * Your initialization methods(checking current project state, getting configs, etc)
    */
-  abstract async initializing(): Promise<void>;
+  async initializing(): Promise<void> { }
 
   /**
    * Where you prompt users for options(where you’d call this.prompt())
@@ -320,14 +352,6 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
     // tslint:disable-next-line: no-backbone-get-set-outside-model
     // this.config.set('answers', this.answers);
     // this.config.save();
-  }
-
-  loadTemplateFiles(): void {
-    if (this.skipGenerator) return;
-
-    this.logBlue(`Analyse template files. (${this.generatorName})`);
-    const x = new ProjectPathAnalyser((...args) => this.templatePath(...args));
-    this.projectFiles = x.getProjectFiles(this.projectInfo);
   }
 
   async copyTemplateFiles(): Promise<void> {
@@ -415,18 +439,13 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
   }
 
   /**
-   * If the method name doesn’t match a priority, it will be pushed to this group.
-   */
-  // tslint:disable-next-line: no-reserved-keywords
-  // abstract async default(): Promise<void>;
-
-  /**
    * Where you write the generator specific files(routes, controllers, etc)
    */
-  // abstract async writing(): Promise<void>;
   // tslint:disable-next-line: no-reserved-keywords
   async default(): Promise<void> {
     if (this.skipGenerator) return;
+
+    this.setRootPath();
 
     this.loadTemplateFiles();
   }
@@ -469,11 +488,11 @@ export abstract class BaseGenerator<TStep extends string> extends generator impl
   /**
    * Where installations are run(npm, bower)
    */
-  abstract async install(): Promise<void>;
+  async install(): Promise<void> { }
 
   /**
    * Called last, cleanup, say good bye, etc
    */
-  abstract async end(): Promise<void>;
+  async end(): Promise<void> { }
 
 }

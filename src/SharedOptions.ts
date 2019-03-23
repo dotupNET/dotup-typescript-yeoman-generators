@@ -5,7 +5,12 @@ import { IProperty, ITypedProperty } from './Types';
 
 export class SharedOptions<TStep extends string> {
 
+  rootPath: string;
   values: ITypedProperty<string> = {};
+
+  setRootPath(rootPath: string) {
+    this.rootPath = rootPath;
+  }
 
   // subscriber: SharedOptionsSubscription<TStep>[] = [];
 
