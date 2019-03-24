@@ -25,6 +25,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
 
   readonly projectInfo: ProjectInfo;
   private readonly doNotEjsReplace: string[] = [];
+  private readonly skippedTemplateFiles: string[] = [];
   private readonly generatorName: string;
 
   skipQuestions: boolean = false;
@@ -47,6 +48,12 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
 
     if (this.sharedOptions !== undefined) {
       _.merge(options, this.sharedOptions.values);
+    }
+
+    if ((<IProperty>options).skippedTemplateFiles !== undefined) {
+      (<string[]>(<IProperty>options).skippedTemplateFiles).forEach(f => {
+        this.addSkippedTemplateFiles(f);
+      })
     }
 
     this.generatorName = this.constructor.name;
@@ -78,6 +85,11 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
 
   addSkipEjsReplacement(targetPath: string): void {
     this.doNotEjsReplace.push(targetPath);
+  }
+
+  addSkippedTemplateFiles(targetPath: string): void {
+    const tmp = path.normalize(targetPath);
+    this.skippedTemplateFiles.push(tmp);
   }
 
   isAnswered(): boolean {
@@ -371,6 +383,11 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
         ext = path.basename(file.filePath);
       }
 
+      // Skip this file?
+      if (this.skippedTemplateFiles.includes(file.targetPath)) {
+        return;
+      }
+
       if (this.fs.exists(this.destinationPath(file.targetPath))) {
 
         switch (ext) {
@@ -378,10 +395,26 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
             throw new Error(`Resolving conflicted ${ext} files not implemented.`);
 
           case '.json':
-            const fileContent = fs.readFileSync(file.filePath, 'utf-8');
-            const addJsonContent = JSON.parse(fileContent);
+            const newJsonContent = {};
+            const existingJsonFileContent = this.fs.read(file.targetPath, 'utf-8');
+            const existingJsonContent = JSON.parse(existingJsonFileContent);
+            const addJsonFileContent = fs.readFileSync(file.filePath, 'utf-8');
+            const addJsonContent = JSON.parse(addJsonFileContent);
+
+            _.mergeWith(newJsonContent, existingJsonContent, (objValue, srcValue) => {
+              if (_.isArray(objValue)) {
+                return objValue.concat(srcValue);
+              }
+            });
+            _.mergeWith(newJsonContent, addJsonContent, (objValue, srcValue) => {
+              if (_.isArray(objValue)) {
+                return objValue.concat(srcValue);
+              }
+            });
+
             // tslint:disable-next-line: no-unsafe-any
-            this.fs.extendJSON(this.destinationPath(file.targetPath), addJsonContent);
+            // this.fs.extendJSON(this.destinationPath(file.targetPath), addJsonContent);
+            this.fs.write(this.destinationPath(file.targetPath), JSON.stringify(newJsonContent, undefined, 2));
             if (!this.doNotEjsReplace.includes(file.targetPath)) {
               this.fs.copyTpl(this.destinationPath(file.targetPath), this.destinationPath(file.targetPath), this.answers);
             }
