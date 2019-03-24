@@ -331,6 +331,10 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
 
         // Should we ask again same step?
         if (accepted === true) {
+          // Maybe answer changed in callback
+          if (BaseGenerator.sharedOptions) {
+            BaseGenerator.sharedOptions.setAnswer(this.currentStep, this.answers[this.currentStep]);
+          }
           // Set next step
           this.currentStep = question.nextQuestion;
         }
