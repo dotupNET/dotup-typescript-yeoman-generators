@@ -227,6 +227,9 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
     keys.forEach(key => {
       if (opt[key] !== undefined) {
         this.answers[key] = opt[key];
+        if (BaseGenerator.sharedOptions) {
+          BaseGenerator.sharedOptions.setAnswer(key, opt[key]);
+        }
       }
     });
   }
