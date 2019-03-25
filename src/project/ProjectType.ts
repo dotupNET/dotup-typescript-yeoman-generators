@@ -1,4 +1,5 @@
 export enum ProjectType {
   app = 'app',
-  lib = 'lib'
+  lib = 'lib',
+  blank = 'blank'
 }

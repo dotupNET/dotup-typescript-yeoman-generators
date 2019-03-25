@@ -113,6 +113,14 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
     }
   }
 
+  mergeAnswers(): void {
+    if (this.sharedOptions === undefined) {
+      return;
+    }
+
+    _.merge(this.answers, this.sharedOptions.values);
+  }
+
   setRootPath(rootPath?: string): void {
 
     if (this.sharedOptions === undefined || this.sharedOptions.rootPath === undefined) {
@@ -373,6 +381,8 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
   async copyTemplateFiles(): Promise<void> {
     if (this.skipGenerator) return;
 
+    this.mergeAnswers();
+
     this.conflictedProjectFiles = new Project(this.projectInfo);
 
     this.projectFiles.templateFiles.forEach(file => {
@@ -401,12 +411,12 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
             const addJsonFileContent = fs.readFileSync(file.filePath, 'utf-8');
             const addJsonContent = JSON.parse(addJsonFileContent);
 
-            _.mergeWith(newJsonContent, existingJsonContent, (objValue, srcValue) => {
+            _.mergeWith(newJsonContent, addJsonContent, (objValue, srcValue) => {
               if (_.isArray(objValue)) {
                 return objValue.concat(srcValue);
               }
             });
-            _.mergeWith(newJsonContent, addJsonContent, (objValue, srcValue) => {
+            _.mergeWith(newJsonContent, existingJsonContent, (objValue, srcValue) => {
               if (_.isArray(objValue)) {
                 return objValue.concat(srcValue);
               }
@@ -424,6 +434,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
           case '.txt':
           case '.md':
           case '.gitignore':
+          case '.npmignore':
             const newGitContent = fs.readFileSync(file.filePath, 'utf-8');
             const gitContent = this.fs.read(this.destinationPath(file.targetPath), 'utf-8');
             const newFileContent = `${gitContent}\n\n# ${this.generatorName} related:\n${newGitContent}`;
