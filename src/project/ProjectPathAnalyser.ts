@@ -70,18 +70,22 @@ export class ProjectPathAnalyser {
       let relativePath = path.relative(this.templatePath, filePath);
 
       // TODO: NOT NICE! Refactor!
-      if (/\b__copy__\b/.test(dir)) {
-        relativePath = relativePath.replace(/\b__copy__\\ts\\\b/g, '');
-        relativePath = relativePath.replace(/\b__copy__\\\b/g, '');
-        typ = TemplateType.copyOnly;
-      } else if (/\b__ejs__\b/.test(dir)) {
-        relativePath = relativePath.replace(/\b__ejs__\\ts\\\b/g, '');
-        relativePath = relativePath.replace(/\b__ejs__\\\b/g, '');
-        typ = TemplateType.ejs;
-      } else {
-        typ = this.categorizeFile(file);
+      // if (/\b__copy__\b/.test(dir)) {
+      //   relativePath = relativePath.replace(/\b__copy__\\ts\\\b/g, '');
+      //   relativePath = relativePath.replace(/\b__copy__\\\b/g, '');
+      //   typ = TemplateType.copyOnly;
+      // } else if (/\b__ejs__\b/.test(dir)) {
+      //   relativePath = relativePath.replace(/\b__ejs__\\ts\\\b/g, '');
+      //   relativePath = relativePath.replace(/\b__ejs__\\\b/g, '');
+      //   typ = TemplateType.ejs;
+      // } else {
+      typ = this.categorizeFile(file);
+      // }
+      if (typ === TemplateType.removeExtension) {
+        const newName = path.join(dir, path.basename(file, path.extname(file)));
+        relativePath = path.relative(this.templatePath, newName);
       }
-
+      
       return to<TemplateFileInfo>({
         // name: file,
         filePath: filePath,
@@ -117,54 +121,56 @@ export class ProjectPathAnalyser {
     });
   }
 
-  private getPath(typ: string, projectLanguage: string, projectTyp?: string, projectRuntime?: string): string {
-    let typPrefix = '';
+  // private getPath(typ: string, projectLanguage: string, projectTyp?: string, projectRuntime?: string): string {
+  //   let typPrefix = '';
 
-    switch (typ) {
-      case TemplateType.copyOnly:
-      case TemplateType.ejs:
-        typPrefix = typ;
-    }
+  //   switch (typ) {
+  //     case TemplateType.copyOnly:
+  //     case TemplateType.ejs:
+  //       typPrefix = typ;
+  //   }
 
-    if (projectRuntime !== undefined) {
-      return this.joinTemplatePath(typPrefix, projectLanguage, projectTyp, projectRuntime);
-    } else if (projectTyp !== undefined) {
-      return this.joinTemplatePath(typPrefix, projectLanguage, projectTyp);
-    } else if (projectLanguage !== undefined) {
-      return this.joinTemplatePath(typPrefix, projectLanguage);
-    } else {
-      return this.joinTemplatePath(typPrefix);
-    }
-  }
+  //   if (projectRuntime !== undefined) {
+  //     return this.joinTemplatePath(typPrefix, projectLanguage, projectTyp, projectRuntime);
+  //   } else if (projectTyp !== undefined) {
+  //     return this.joinTemplatePath(typPrefix, projectLanguage, projectTyp);
+  //   } else if (projectLanguage !== undefined) {
+  //     return this.joinTemplatePath(typPrefix, projectLanguage);
+  //   } else {
+  //     return this.joinTemplatePath(typPrefix);
+  //   }
+  // }
 
   categorizeFile(name: string): TemplateType {
 
     if (name.startsWith(TemplateType.copyOnly)) {
       return TemplateType.copyOnly;
-    } else if (name.startsWith(TemplateType.ejs)) {
-      return TemplateType.ejs;
-    } else if (name.startsWith(TemplateType.merge)) {
-      return TemplateType.merge;
-    } else if (path.extname(name) === '.ejs') {
-      return TemplateType.ejs;
+      // } else if (name.startsWith(TemplateType.ejs)) {
+      //   return TemplateType.ejs;
+      // } else if (name.startsWith(TemplateType.merge)) {
+      //   return TemplateType.merge;
+      // } else if (path.extname(name) === '.ejs') {
+      //   return TemplateType.ejs;
+    } else if (path.extname(name).startsWith('._.')) {
+      return TemplateType.removeExtension;
     } else {
       return TemplateType.copyOnly;
     }
 
   }
 
-  categorizeFolder(name: string): TemplateType {
+  // categorizeFolder(name: string): TemplateType {
 
-    if (name.match(/\b__copy__\b/)) {
-      return TemplateType.copyOnly;
-    } else if (name.match(/\b__ejs__\b/)) {
-      return TemplateType.ejs;
-    } else if (path.extname('.ejs')) {
-      return TemplateType.projectTypeFolder;
-    } else {
-      return TemplateType.copyOnly;
-    }
+  //   if (name.match(/\b__copy__\b/)) {
+  //     return TemplateType.copyOnly;
+  //   } else if (name.match(/\b__ejs__\b/)) {
+  //     return TemplateType.ejs;
+  //   } else if (path.extname('.ejs')) {
+  //     return TemplateType.projectTypeFolder;
+  //   } else {
+  //     return TemplateType.copyOnly;
+  //   }
 
-  }
+  // }
 
 }

@@ -1,6 +1,7 @@
 export enum TemplateType {
   copyOnly = '__copy__',
-  merge = '__merge__',
-  ejs = '__ejs__',
-  projectTypeFolder = 'projectTypeFolder'
+  removeExtension = 'removeExtension'
+  // merge = '__merge__',
+  // ejs = '__ejs__',
+  // projectTypeFolder = 'projectTypeFolder'
 }
