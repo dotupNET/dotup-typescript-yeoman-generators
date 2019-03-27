@@ -151,7 +151,7 @@ export class ProjectPathAnalyser {
       //   return TemplateType.merge;
       // } else if (path.extname(name) === '.ejs') {
       //   return TemplateType.ejs;
-    } else if (path.extname(name).startsWith('._.')) {
+    } else if (path.extname(name) === '._') {
       return TemplateType.removeExtension;
     } else {
       return TemplateType.copyOnly;
