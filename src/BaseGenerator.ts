@@ -392,6 +392,12 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
 
       // Get the file extension
       let ext = path.extname(file.filePath);
+
+      // Remove the extension on renamable files
+      if (ext === '._') {
+        ext = path.extname(path.basename(file.filePath, '._'));
+      }
+
       if (ext === '') {
         ext = path.basename(file.filePath);
       }
