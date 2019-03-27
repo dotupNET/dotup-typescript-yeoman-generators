@@ -392,7 +392,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
     this.projectFiles.templateFiles.forEach(file => {
 
       // Get the file extension
-      let ext = path.extname(file.filePath);
+      let ext = path.extname(file.targetPath);
 
       // Remove the extension on renamable files
       if (file.typ === TemplateType.removeExtension) {
@@ -400,7 +400,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
       }
 
       if (ext === '') {
-        ext = path.basename(file.filePath);
+        ext = path.basename(file.targetPath);
       }
 
 
