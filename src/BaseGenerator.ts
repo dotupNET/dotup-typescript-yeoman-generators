@@ -13,6 +13,7 @@ import { IStepQuestion } from './questions/IStepQuestion';
 import { Question } from './questions/Question';
 import { SharedOptions } from './SharedOptions';
 import { GeneratorOptions, IProperty, MethodsToRegister } from './Types';
+import { TemplateType } from './project';
 
 export abstract class BaseGenerator<TStep extends string> extends generator {
 
@@ -394,13 +395,14 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
       let ext = path.extname(file.filePath);
 
       // Remove the extension on renamable files
-      if (ext === '._') {
-        ext = path.extname(path.basename(file.filePath, '._'));
+      if (file.typ === TemplateType.removeExtension) {
+        ext = path.extname(file.targetPath);
       }
 
       if (ext === '') {
         ext = path.basename(file.filePath);
       }
+
 
       // Skip this file?
       if (this.skippedTemplateFiles.includes(file.targetPath)) {
