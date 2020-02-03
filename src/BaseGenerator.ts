@@ -413,7 +413,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
 
         switch (ext) {
           case '.ts':
-            throw new Error(`Resolving conflicted ${ext} files not implemented.`);
+            throw new Error(`Resolving conflicted ${ext} files not implemented. ${file}`);
 
           case '.json':
             const newJsonContent = {};
@@ -458,7 +458,7 @@ export abstract class BaseGenerator<TStep extends string> extends generator {
 
           default:
             this.conflictedProjectFiles.templateFiles.push(file);
-            throw new Error(`Could not resolve conflicted ${ext} files.`);
+            throw new Error(`Could not resolve conflicted ${ext} files. ${file}`);
 
         }
 

@@ -2,7 +2,7 @@
   "build": true,
   "docs": false,
   "mocha": false,
-  "tslint": true,
+  "tslint": false,
   "watch": false,
   "yogen": false,
   "npm": true,

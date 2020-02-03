@@ -6,7 +6,11 @@ const
 
 var config = new Config();
 
+/*
+https://github.com/typescript-eslint/typescript-eslint/issues/109
 
+
+*/
 /**
  * Lint all custom TypeScript files.
  */
